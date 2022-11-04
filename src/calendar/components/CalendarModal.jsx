@@ -1,11 +1,11 @@
-import { useState } from "react"
 
-import { addHours } from "date-fns"
-
-import Modal from "react-modal"
+import { es } from "date-fns/locale"
 import DatePicker, { registerLocale } from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
-import { es } from "date-fns/locale"
+
+import Modal from "react-modal"
+
+import {useCalendar  } from '../../hooks'
 
 registerLocale('es', es)
 
@@ -25,33 +25,16 @@ Modal.setAppElement('#root')
 
 export const CalendarModal = () => {
 
-    const [modalOpen, setModalOpen] = useState( true )
-
-    const [formValues, setformValues] = useState({
-        title: '',
-        notes: '',
-        start: new Date(),
-        end: addHours( new Date(), 2 ),
-    })
-
-    const onCloseModal = () => {
-        setModalOpen(false)
-    }
-
-    const setChange = ({ target }) => {
-        console.log( target.value )
-        setformValues({
-            ...formValues,
-            [target.name]: target.value
-        })
-    }
-
-    const onDateChanged = (event, changing) => {
-        setformValues({
-            ...formValues,
-            [changing]: event
-        })
-    }
+    const {
+        modalOpen,  
+        formSubmitted,
+        formValues,
+        onCloseModal,
+        setChange,
+        onDateChanged,
+        onSubmit,
+        titleClass
+    } = useCalendar('')
 
   return (
     <Modal
@@ -98,7 +81,7 @@ export const CalendarModal = () => {
                 <label>Titulo y notas</label>
                 <input 
                     type="text" 
-                    className="form-control"
+                    className={`form-control ${titleClass}`}
                     placeholder="Título del evento"
                     name="title"
                     autoComplete="off"
@@ -124,6 +107,7 @@ export const CalendarModal = () => {
             <button
                 type="submit"
                 className="btn btn-outline-primary btn-block"
+                onClick={onSubmit}
             >
                 <i className="far fa-save"></i>
                 <span> Guardar</span>
